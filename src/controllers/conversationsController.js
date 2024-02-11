@@ -1,0 +1,76 @@
+const { response } = require('express');
+const Conversations = require('../models/conversationModel');
+const Messages = require('../models/messageModel');
+
+const getConversations = async( request, response ) => {
+    try {
+        const id_usuario = request.params.userId;
+
+        //Lógica de usuario para buscar conversaciones.
+        const conversations = await Conversations.find ({})
+        response.status(200).json({
+            info: conversations.length < 0 ? '' : 'No tienes conversaciones',
+            conversations: conversations
+        });
+    } catch (error) {
+        response.status(500).json( {error: error.message })
+    }
+}
+
+const getConversation = async ( request, response ) => {
+    try {
+        const user_id = request.query.userId;
+        const conversation_id = request.query.conversationId;
+        
+        const conversation = await Conversations.findById( conversation_id );
+        const messages = await Messages.find( {conversation_id: conversation_id})
+
+        conversation.messages = messages;
+
+        response.status(200).json({
+            info: conversation ? `Conversación: ${conversation.title}` : 'No existe esta conversación',
+            conversation: conversation
+        });
+    } catch (error) {
+        response.status(500).json( {error: error.message })
+    }
+}
+
+const postConversation = async ( request, response ) => {
+    try {
+        const id_usuario = request.params.userId;
+        const data = request.body
+        const newConversation = new Conversations ({
+            title: data.title,
+        })
+        // //¿Debería comprobar que no existe ya un chat con el mismo nombre?
+
+        await newConversation.save();
+        
+        response.status(200).json( {
+            info: 'Conversation Created',
+            id: newConversation.id,
+            data : request.body
+        });
+    } catch (error) {
+        console.error('Error al crear la conversación:', error);
+        response.status(500).json( {error: error.message })
+    }
+}
+
+const deleteConversation = async ( request, response ) => {
+    try {
+        const id_conversacion = request.params.id;
+        const conversationDelete = await Conversations.findByIdAndDelete( {conversation_id: id_conversacion})
+
+        if( conversationDelete ) response.status(200).json( 'Conversation Deleted' );
+    } catch (error) {
+        response.status(500).json( {error: error.message })
+    }
+}
+
+module.exports = {
+    getConversations,
+    getConversation,
+    postConversation
+}
