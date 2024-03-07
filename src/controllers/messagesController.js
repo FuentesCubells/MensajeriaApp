@@ -6,9 +6,9 @@ const getMessages = async ( request, response ) => {
     try {
         const id = request.query.conversationId; 
         const messages = await Messages.find( {conversation_id: id} );
-
+       
         response.status(200).json( {
-            info : messages.length < 0 ? 'Los mensajes' : 'No tienes mensajes',
+            info : messages.length === 0 ? 'No tienes mensajes' : 'Tus mensajes',
             messages: messages
         } );
 
@@ -26,7 +26,7 @@ const postMessage = async (request, response) => {
             conversation_id: conversationId
         })
         
-         await newMessage.save();
+        await newMessage.save();
 
         //Buscar el id del mensaje nuevo, si existe modificar el mensaje devuelto (info).
         const saved = await Messages.findById(newMessage._id)

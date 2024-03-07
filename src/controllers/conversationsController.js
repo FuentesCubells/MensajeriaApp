@@ -4,12 +4,19 @@ const Messages = require('../models/messageModel');
 
 const getConversations = async( request, response ) => {
     try {
-        const id_usuario = request.params.userId;
+        const user_id = request.query.userId;
+        const conversation_id = request.query.conversationId;
+        
+        const conversations = await Conversations.find ({});
+        for (const conversation of conversations) {
+            const messages = await Messages.find({ conversation_id: conversation._id });
+            conversation.messages = messages;
+        }
 
         //Lógica de usuario para buscar conversaciones.
-        const conversations = await Conversations.find ({})
+        
         response.status(200).json({
-            info: conversations.length < 0 ? '' : 'No tienes conversaciones',
+            info: conversations.length === 0 ? 'No tienes conversaciones' : 'Tus Conversaciones',
             conversations: conversations
         });
     } catch (error) {
