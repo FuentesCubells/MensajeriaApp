@@ -2,8 +2,8 @@ const express = require('express');
 const router = express.Router();
 const {getConversation, getConversations, postConversation} = require ( '../controllers/conversationsController' );
 
-router.get('/all/', getConversations);
-router.get('/one', getConversation);
+router.get('/all/:userId', getConversations);
+router.get('/one/:userId', getConversation);
 router.post('/new', postConversation);
 
 

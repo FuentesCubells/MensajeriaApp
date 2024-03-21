@@ -4,23 +4,24 @@ const Messages = require('../models/messageModel');
 
 const getConversations = async( request, response ) => {
     try {
-        const user_id = request.query.userId;
-        const conversation_id = request.query.conversationId;
+        const user_id = request.params.userId;
         
-        const conversations = await Conversations.find ({});
+        const conversations = await Conversations.find ({ user_id: user_id });
         for (const conversation of conversations) {
             const messages = await Messages.find({ conversation_id: conversation._id });
             conversation.messages = messages;
         }
 
-        //Lógica de usuario para buscar conversaciones.
-        
         response.status(200).json({
             info: conversations.length === 0 ? 'No tienes conversaciones' : 'Tus Conversaciones',
             conversations: conversations
         });
     } catch (error) {
-        response.status(500).json( {error: error.message })
+        return response.status(500).json({
+            ok: false,
+            info: 'Something went wrong',
+            message: error.message
+        });
     }
 }
 
@@ -45,10 +46,11 @@ const getConversation = async ( request, response ) => {
 
 const postConversation = async ( request, response ) => {
     try {
-        const id_usuario = request.params.userId;
+        const id_usuario = request.query.userId;
         const data = request.body
         const newConversation = new Conversations ({
             title: data.title,
+            user_id: id_usuario
         })
         // //¿Debería comprobar que no existe ya un chat con el mismo nombre?
 
@@ -57,7 +59,7 @@ const postConversation = async ( request, response ) => {
         response.status(200).json( {
             info: 'Conversation Created',
             id: newConversation.id,
-            data : request.body
+            data : newConversation
         });
     } catch (error) {
         console.error('Error al crear la conversación:', error);
@@ -79,5 +81,6 @@ const deleteConversation = async ( request, response ) => {
 module.exports = {
     getConversations,
     getConversation,
-    postConversation
+    postConversation,
+    deleteConversation
 }

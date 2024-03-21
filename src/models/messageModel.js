@@ -2,7 +2,7 @@ const mongoose = require('../services/dbConection');
 
 const messageSchema = new mongoose.Schema({
   conversation_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Conversation', required: true },
-  //   sender: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }, //Remitente
+  sender: { type: mongoose.Schema.Types.ObjectId, ref: 'User'},
   text: { type: String, required: true },
   createdAt: { type: Date, default: Date.now }
 });
