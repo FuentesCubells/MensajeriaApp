@@ -9,7 +9,7 @@ router.post('/register',
     body('email').isEmail(),
     body('password').isStrongPassword(),
     body('telf').matches(/^\d+$/),
-    
+
     (req, res) => {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
@@ -20,8 +20,7 @@ router.post('/register',
         postUser(req, res);
     }
 );
-
-router.get('/login',
+router.post('/login',
     body('username').isLength({ min: 3, max: 20 }).optional(),
     body('email').isEmail().optional(),
     body('password').isStrongPassword(),
@@ -36,7 +35,6 @@ router.get('/login',
        getUser( req, res );
     }
 );
-
 router.put('/edit/:id', 
     body('username').isLength({ min: 3, max: 20 }).optional(),
     body('email').isEmail().optional(),
@@ -51,12 +49,11 @@ router.put('/edit/:id',
         editUser( req, res );
     }
 );
-
 router.delete('/delete/:id',
     body('username').isLength({ min: 3, max: 20 }),
     body('email').isEmail(),
     body('password').isStrongPassword(),
-    
+    jwtValidation,
     (req, res) => {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {

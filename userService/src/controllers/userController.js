@@ -8,16 +8,15 @@ const getUser = async (request, response) => {
     try {
         const { username, email, password } = request.body;
         let user = null;
-        
+    
         if (email) {
             user = await User.findOne({ email: email });
         } else if (username) {
             user = await User.findOne({ username: username });
         }
   
-        if (user && bcrypt.compareSync( password, user.password)) {
+        if (user && bcrypt.compareSync( password, user.password )) {
             const token = await generateJWT( user._id, username);
-
             return response.status(200).json({
                 ok: true,
                 info: 'User logged in',
@@ -41,7 +40,6 @@ const getUser = async (request, response) => {
 }
 const postUser = async( request, response ) => {
     try {
-        
         const { username, email, telf, password } = request.body;
         const exstUser = await User.find( {email: email} );
         

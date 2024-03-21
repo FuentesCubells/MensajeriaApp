@@ -11,14 +11,14 @@ const app = express();
 const server = http.createServer(app); 
 
 const corsOptions = {
-    origin: 'http://localhost:4200',
+    origin: 'http://localhost:3003',
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type'],
     credentials: true,
 };
 app.use(cors(corsOptions));
 app.use(express.json());
-app.use('/user/', userRouter);
+app.use('/user', userRouter);
 
 const PORT = process.env.PORT || 3001;
 server.listen(PORT, () => {
