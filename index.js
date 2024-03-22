@@ -1,6 +1,7 @@
 require('dotenv').config();
 
 const express = require('express');
+const helmet = require('helmet');
 const http = require('http');
 const cors = require('cors');
 const gatewayRouter = require('./src/routes/gateway')
@@ -12,6 +13,7 @@ const corsOptions = {
     allowedHeaders: ['Content-Type'],
     credentials: true,
 };
+app.use(helmet());
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use('/gateway/', gatewayRouter )
