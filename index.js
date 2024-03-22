@@ -1,8 +1,10 @@
 require('dotenv').config();
 
 const express = require('express');
+
 const http = require('http');
 const cors = require('cors');
+const helmet = require('helmet');
 const io = require('./src/services/socketService');
 const messagesRouter = require('./src/routes/messageRoutes');
 const conversationRouter = require('./src/routes/conversationRoutes');
@@ -18,6 +20,7 @@ const corsOptions = {
     allowedHeaders: ['Content-Type'],
     credentials: true,
 };
+app.use(helmet());
 app.use(cors(corsOptions));
 app.use(express.json());
 

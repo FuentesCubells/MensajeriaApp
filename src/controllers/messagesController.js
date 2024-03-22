@@ -19,11 +19,13 @@ const getMessages = async ( request, response ) => {
 
 const postMessage = async (request, response) => {
     try {
-        const conversationId = request.query.conversationId;
+        const user_id = request.params.userId;
+        const conversationId = request.body.conversationId;
         const text = request.body.text;
         const newMessage = new Messages ({
             text, 
-            conversation_id: conversationId
+            conversation_id: conversationId,
+            user_id: user_id
         })
         
         await newMessage.save();

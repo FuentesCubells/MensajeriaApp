@@ -2,11 +2,11 @@ const { response } = require('express');
 const Conversations = require('../models/conversationModel');
 const Messages = require('../models/messageModel');
 
-const getConversations = async( request, response ) => {
+const getConversations = async (request, response) => {
     try {
         const user_id = request.params.userId;
-        
-        const conversations = await Conversations.find ({ user_id: user_id });
+
+        const conversations = await Conversations.find({ user_id: user_id });
         for (const conversation of conversations) {
             const messages = await Messages.find({ conversation_id: conversation._id });
             conversation.messages = messages;
@@ -25,13 +25,13 @@ const getConversations = async( request, response ) => {
     }
 }
 
-const getConversation = async ( request, response ) => {
+const getConversation = async (request, response) => {
     try {
-        const user_id = request.query.userId;
+        const user_id = request.params.userId;
         const conversation_id = request.query.conversationId;
-        
-        const conversation = await Conversations.findById( conversation_id );
-        const messages = await Messages.find( {conversation_id: conversation_id})
+
+        const conversation = await Conversations.findOne({ user_id: user_id });
+        const messages = await Messages.find({ conversation_id: conversation_id })
 
         conversation.messages = messages;
 
@@ -40,43 +40,64 @@ const getConversation = async ( request, response ) => {
             conversation: conversation
         });
     } catch (error) {
-        response.status(500).json( {error: error.message })
+        response.status(500).json({ error: error.message })
     }
 }
 
-const postConversation = async ( request, response ) => {
+const postConversation = async (request, response) => {
     try {
-        const id_usuario = request.query.userId;
+        const id_usuario = request.params.userId;
         const data = request.body
-        const newConversation = new Conversations ({
+        const newConversation = new Conversations({
             title: data.title,
             user_id: id_usuario
         })
         // //¿Debería comprobar que no existe ya un chat con el mismo nombre?
 
         await newConversation.save();
-        
-        response.status(200).json( {
+
+        response.status(200).json({
             info: 'Conversation Created',
             id: newConversation.id,
-            data : newConversation
+            data: newConversation
         });
     } catch (error) {
         console.error('Error al crear la conversación:', error);
-        response.status(500).json( {error: error.message })
+        response.status(500).json({ error: error.message })
     }
 }
 
-const deleteConversation = async ( request, response ) => {
+const deleteConversation = async (request, response) => {
     try {
-        const id_conversacion = request.params.id;
-        const conversationDelete = await Conversations.findByIdAndDelete( {conversation_id: id_conversacion})
+        const { conversationId } = request.body;
 
-        if( conversationDelete ) response.status(200).json( 'Conversation Deleted' );
+        const conversation = await Conversations.findOne({ conversation_id: conversationId });
+        
+        if (!conversation) {
+            return response.status(404).json({
+                ok: false,
+                message: 'Conversation not found'
+            });
+        }
+
+        const deletedConversation = await Conversations.findOneAndDelete({ conversation_id: conversationId });
+
+        if (deletedConversation) {
+            return response.status(200).json({
+                ok: true,
+                message: 'Conversation deleted successfully'
+            });
+        } else {
+            return response.status(500).json({
+                ok: false,
+                message: 'Failed to delete conversation'
+            });
+        }
     } catch (error) {
-        response.status(500).json( {error: error.message })
+        return response.status(500).json({ error: error.message });
     }
 }
+
 
 module.exports = {
     getConversations,
