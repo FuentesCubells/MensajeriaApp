@@ -49,12 +49,13 @@ router.put('/edit/:id',
         editUser( req, res );
     }
 );
-router.delete('/delete/:id',
+router.post('/delete/:id',
     body('username').isLength({ min: 3, max: 20 }),
     body('email').isEmail(),
     body('password').isStrongPassword(),
     jwtValidation,
     (req, res) => {
+        console.log(req);
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(400).json({

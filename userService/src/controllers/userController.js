@@ -14,7 +14,7 @@ const getUser = async (request, response) => {
         } else if (username) {
             user = await User.findOne({ username: username });
         }
-  
+       
         if (user && bcrypt.compareSync( password, user.password )) {
             const token = await generateJWT( user._id, username);
             return response.status(200).json({
@@ -126,7 +126,6 @@ const editUser = async (request, response) => {
 }
 const deleteUser = async (request, response) => {
     try {
-        
         const id = request.params.id;
         const dataToUpdate = request.body;
 

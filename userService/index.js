@@ -1,6 +1,7 @@
 require('dotenv').config();
 
 const express = require('express');
+const helmet = require('helmet');
 const http = require('http');
 const cors = require('cors');
 const userRouter = require('./src/routes/userRoutes');
@@ -9,13 +10,14 @@ const mongoose = require('./src/services/dbConection');
 
 const app = express();
 const server = http.createServer(app); 
-
 const corsOptions = {
     origin: 'http://localhost:3003',
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type'],
     credentials: true,
 };
+
+app.use(helmet());
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use('/user', userRouter);
